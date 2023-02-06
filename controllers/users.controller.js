@@ -3,9 +3,11 @@ const database = dbClient.db(process.env.MONGO_DB_DATABASE);
 const collection = database.collection('users');
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
+const { ObjectId } = require('mongodb');
 
 exports.findAll = async (req, res) => {
     const data = await collection.find({}).toArray();
+    console.log(data);
     res.status(200).json(data);
 };
 
@@ -16,7 +18,7 @@ exports.findOne = async (req, res) => {
             message: 'No id provided',
         });
     }
-    const data = await collection.findOne({ _id: id });
+    const data = await collection.findOne({ _id: new ObjectId(id) });
     if (!data) {
         res.status(404).json({
             message: `No user found with id ${id}`,
@@ -34,18 +36,23 @@ exports.create = async (req, res) => {
 
     const { value, error } = schema.validate(body);
 
-    if (error) {
-        return res.status(400).json({ message: error });
-    }
+    // if (error) {
+    //     return res.status(400).json({ message: error });
+    // }
 
     const { password, ...rest } = value;
 
     const hash = await bcrypt.hash(password, 10);
 
-    const data = await collection.insertOne({
-        password: hash,
-        ...rest,
-    });
+    const data = await collection
+        .insertOne({
+            password: hash,
+            ...rest,
+        })
+        .catch((err) => {
+            console.log(err);
+            return { error: 'impossible to save this record!' };
+        });
 
     res.status(201).json(data);
 };

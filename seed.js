@@ -3,8 +3,9 @@ require('dotenv').config({ path: '.env.config' });
 const { faker } = require('@faker-js/faker');
 const dbClient = require('./utils/db-client.util');
 const bcrypt = require('bcrypt');
+const validators = require('./validators');
 
-const seed = async () => {
+(async () => {
     const db = dbClient.db(process.env.MONGO_DB_DATABASE);
 
     // db.dropCollection('users');
@@ -19,19 +20,16 @@ const seed = async () => {
         try {
             if (names.includes(c)) {
                 await db.dropCollection(c);
-            }
-            await db.createCollection(c);
+            } else await db.createCollection(c, validators[c] ?? null);
         } catch (e) {
-            console.error(c);
+            console.error(c, e);
         }
     });
 
     //DTO = DATA TRANSFER OBJECT
-    const hash = await bcrypt.hash(faker.internet.password(), 10);
 
     const userDtos = await Promise.all(
         [...Array(5)].map(async () => {
-            // const hash = await bcrypt.hash(faker.internet.password(), 10);
             return {
                 name: {
                     first: faker.name.firstName(),
@@ -57,7 +55,7 @@ const seed = async () => {
         userDtos.map((u) => db.collection('users').insertOne(u))
     );
     const location = ['Secréatariat', 'Local 128', 'Local 125', 'Local 555'];
-    const appointmentDtos = await [...Array(5)].map(() => ({
+    const appointmentDtos = [...Array(5)].map(() => ({
         end: new Date('2023-02-01T10:00:00Z'),
         start: new Date(),
         subject: 'test',
@@ -69,12 +67,9 @@ const seed = async () => {
         createdAt: new Date(),
         updatedAt: new Date(),
     }));
-    // console.log(appointmentDto);
-    // console.log(appointmentDtos);
-    // console.log(appointmentDtos);
 
     const createdAppointments = await Promise.all(
         appointmentDtos.map((u) => db.collection('appointments').insertOne(u))
     );
-};
-seed();
+})();
+// seed();
