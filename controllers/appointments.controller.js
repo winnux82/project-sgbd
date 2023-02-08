@@ -5,31 +5,39 @@ const collection = database.collection('appointments');
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
 const { ObjectId } = require('mongodb');
+const redis = require('../utils/redis-client.util');
 
 const findAll = async (req, res) => {
-    const data = await collection
-        .aggregate([
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: 'participants',
-                    foreignField: '_id',
-                    as: 'populatedParticipants',
+    const inCache = await redisClient.get('appointments::all');
+    if (inCache) {
+        return res.status(200).json(JSON.parse(inCache));
+    } else {
+        const data = await collection
+            .aggregate([
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: 'participants',
+                        foreignField: '_id',
+                        as: 'populatedParticipants',
+                    },
                 },
-            },
-            {
-                $project: {
-                    location: 1,
-                    subject: 1,
-                    start: 1,
-                    end: 1,
-                    participants: '$populatedParticipants',
+                {
+                    $project: {
+                        location: 1,
+                        subject: 1,
+                        start: 1,
+                        end: 1,
+                        participants: '$populatedParticipants',
+                    },
                 },
-            },
-        ])
-        .toArray();
+            ])
+            .toArray();
 
-    return res.status(200).json(data);
+        redisClient.set('appointments::all', JSON.stringify(data), 'EX', 600);
+
+        return res.status(200).json(data);
+    }
 };
 const findOne = async (req, res) => {
     const { id } = req.params;

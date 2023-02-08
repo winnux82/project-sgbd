@@ -29,7 +29,7 @@ const validators = require('./validators');
     //DTO = DATA TRANSFER OBJECT
 
     const userDtos = await Promise.all(
-        [...Array(5)].map(async () => {
+        [...Array(10000)].map(async () => {
             return {
                 name: {
                     first: faker.name.firstName(),
@@ -55,14 +55,14 @@ const validators = require('./validators');
         userDtos.map((u) => db.collection('users').insertOne(u))
     );
     const location = ['Secréatariat', 'Local 128', 'Local 125', 'Local 555'];
-    const appointmentDtos = [...Array(5)].map(() => ({
+    const appointmentDtos = [...Array(10000)].map(() => ({
         end: new Date('2023-02-01T10:00:00Z'),
         start: new Date(),
         subject: 'test',
-        location: location[Math.floor(Math.random() * 3)],
+        location: location[Math.floor(Math.random() * 4)],
         participants: [
-            createdUsers[Math.floor(Math.random() * 4)].insertedId,
-            createdUsers[Math.floor(Math.random() * 4)].insertedId,
+            createdUsers[Math.floor(Math.random() * 10000)].insertedId,
+            createdUsers[Math.floor(Math.random() * 10000)].insertedId,
         ],
         createdAt: new Date(),
         updatedAt: new Date(),
