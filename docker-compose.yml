@@ -1,0 +1,21 @@
+version: "3.7"
+services:
+  mongo:
+    container_name: mongodb_6_maes
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - 27020:27017
+    volumes:
+      # - ../db/mongodb_6_maes/data/db:/data/db
+      - ../db/mongodb_6_maes/:/data/db
+  # networks:
+  #   -app-network
+  redis:
+    container_name: redis_maes
+    image: redis:latest
+    ports:
+      - "6379:6379"

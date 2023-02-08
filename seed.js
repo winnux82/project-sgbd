@@ -71,5 +71,6 @@ const validators = require('./validators');
     const createdAppointments = await Promise.all(
         appointmentDtos.map((u) => db.collection('appointments').insertOne(u))
     );
+    process.exit(0);
 })();
 // seed();

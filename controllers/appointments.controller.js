@@ -1,4 +1,5 @@
-const dbClient = require('../utils/').dbClient;
+const { dbClient, redisClient } = require('../utils/');
+// const dbClient = require('../utils/').dbClient;
 const database = dbClient.db(process.env.MONGO_DB_DATABASE);
 const collection = database.collection('appointments');
 const bcrypt = require('bcrypt');
@@ -113,7 +114,7 @@ const updateOne = async (req, res) => {
             _id: new ObjectId(id),
         },
         {
-            $set: updateValue,
+            $addToSet: { participants: new ObjectId(body.participantId) },
         },
         {
             returnDocument: 'after',
@@ -221,7 +222,27 @@ const addParticipant = async (req, res) => {
 
     res.status(201).json({ message: 'Participant added' });
 };
-const removeParticipant = async (req, res) => {};
+const removeParticipant = async (req, res) => {
+    const { id, participantId } = req.params;
+    //gestion des erreurs
+    const data = await collection.findOneAndUpdate(
+        {
+            //filtre
+            _id: new ObjectId(id),
+        },
+        {
+            //comment faire
+            $pull: {
+                participants: { $in: [new ObjectId(participantId)] },
+            },
+        },
+        {
+            //options mongos
+            returnDocument: 'after',
+        }
+    );
+    res.status(201).json({ message: 'Participant removed' });
+};
 
 module.exports = {
     findAll,
