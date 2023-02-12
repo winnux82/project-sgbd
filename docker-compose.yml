@@ -11,7 +11,7 @@ services:
       - 27020:27017
     volumes:
       # - ../db/mongodb_6_maes/data/db:/data/db
-      - ../db/mongodb_6_maes/:/data/db
+      - ./db/mongodb_6_maes/:/data/db
   # networks:
   #   -app-network
   redis:

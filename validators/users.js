@@ -3,7 +3,8 @@ const { string } = require('joi');
 module.exports = {
     validator: {
         $jsonSchema: {
-            required: ['email'],
+            bsonType: 'object',
+            // required: ['username,password,email'],
             properties: {
                 name: {
                     bsonType: 'object',
@@ -13,6 +14,18 @@ module.exports = {
                         middle: { bsonType: string },
                         last: { bsonType: string },
                     },
+                },
+                username: {
+                    bsonType: 'string',
+                    description: ' must be a string and is required',
+                },
+                password: {
+                    bsonType: 'string',
+                    description: ' must be a string and is required',
+                },
+                mail: {
+                    bsonType: 'string',
+                    description: ' must be a string and is required',
                 },
             },
         },

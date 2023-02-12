@@ -29,13 +29,15 @@ const validators = require('./validators');
     //DTO = DATA TRANSFER OBJECT
 
     const userDtos = await Promise.all(
-        [...Array(10000)].map(async () => {
+        [...Array(10)].map(async () => {
             return {
                 name: {
                     first: faker.name.firstName(),
                     middle: faker.name.middleName(),
                     last: faker.name.lastName(),
                 },
+                username: faker.internet.userName(),
+
                 email: faker.internet.email(),
                 address: {
                     street: faker.address.streetAddress(),
@@ -44,7 +46,7 @@ const validators = require('./validators');
                     city: faker.address.city(),
                     country: faker.address.country(),
                 },
-                password: bcrypt.hashSync(faker.internet.password(), 10),
+                password: 'bcrypt.hashSync(faker.internet.password(), 10)',
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
@@ -55,14 +57,16 @@ const validators = require('./validators');
         userDtos.map((u) => db.collection('users').insertOne(u))
     );
     const location = ['Secréatariat', 'Local 128', 'Local 125', 'Local 555'];
-    const appointmentDtos = [...Array(10000)].map(() => ({
+    const appointmentDtos = [...Array(10)].map(() => ({
         end: new Date('2023-02-01T10:00:00Z'),
         start: new Date(),
         subject: 'test',
         location: location[Math.floor(Math.random() * 4)],
         participants: [
-            createdUsers[Math.floor(Math.random() * 10000)].insertedId,
-            createdUsers[Math.floor(Math.random() * 10000)].insertedId,
+            createdUsers[Math.floor(Math.random() * 10)].insertedId,
+            createdUsers[Math.floor(Math.random() * 10)].insertedId,
+            createdUsers[Math.floor(Math.random() * 10)].insertedId,
+            createdUsers[Math.floor(Math.random() * 10)].insertedId,
         ],
         createdAt: new Date(),
         updatedAt: new Date(),

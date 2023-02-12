@@ -5,10 +5,9 @@ const collection = database.collection('appointments');
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
 const { ObjectId } = require('mongodb');
-const redis = require('../utils/redis-client.util');
 
 const findAll = async (req, res) => {
-    const inCache = await redisClient.get('appointments::all');
+    const inCache = await redisClient.get('appointments:all');
     if (inCache) {
         return res.status(200).json(JSON.parse(inCache));
     } else {
@@ -34,7 +33,7 @@ const findAll = async (req, res) => {
             ])
             .toArray();
 
-        redisClient.set('appointments::all', JSON.stringify(data), 'EX', 600);
+        redisClient.set('appointments:all', JSON.stringify(data), 'EX', 600);
 
         return res.status(200).json(data);
     }
@@ -46,13 +45,21 @@ const findOne = async (req, res) => {
             message: 'No id provided',
         });
     }
-    const data = await collection.findOne({ _id: new ObjectId(id) });
-    if (!data) {
-        res.status(404).json({
-            message: `No appointments found with id ${id}`,
-        });
+    const inCache = await redisClient.get(`appointments:${id}`);
+    if (inCache) {
+        return res.status(200).json(JSON.parse(inCache));
+    } else {
+        const data = await collection.findOne({ _id: new ObjectId(id) });
+        if (!data) {
+            res.status(404).json({
+                message: `No appointments found with id ${id}`,
+            });
+        }
+
+        redisClient.set(`appointments:${id}`, JSON.stringify(data), 'EX', 600);
+
+        return res.status(200).json(data);
     }
-    res.status(200).json(data);
 };
 
 const create = async (req, res) => {
