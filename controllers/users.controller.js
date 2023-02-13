@@ -28,6 +28,7 @@ exports.findOne = async (req, res) => {
 };
 exports.create = async (req, res) => {
     const schema = Joi.object({
+        username: Joi.string().required(),
         email: Joi.string().email().required(),
         password: Joi.string().min(8).required(),
     });
@@ -41,7 +42,8 @@ exports.create = async (req, res) => {
     // }
 
     const { password, ...rest } = value;
-
+    //on efface le
+    delete password;
     const hash = await bcrypt.hash(password, 10);
 
     const data = await collection
@@ -53,8 +55,8 @@ exports.create = async (req, res) => {
             console.log(err);
             return { error: 'impossible to save this record!' };
         });
-
-    res.status(201).json(data);
+    res.status(201).json(value);
+    // res.status(201).json(data);
 };
 exports.updateOne = async (req, res) => {};
 exports.deleteOne = async (req, res) => {

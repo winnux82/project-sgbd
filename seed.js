@@ -15,6 +15,13 @@ const validators = require('./validators');
     const names = existingcollections.map((c) => c.name);
     console.log(names);
 
+    //si ça existe déjà on stop
+    // const collectionName = 'users';
+    // const existingcollections = await db.listCollections().toArray();
+    // if (existingcollections.some((c) => c.name === collectionName)) {
+    //     return;
+    // }
+
     //on efface les données et on les recrée
     collections.forEach(async (c) => {
         try {
@@ -37,8 +44,9 @@ const validators = require('./validators');
                     last: faker.name.lastName(),
                 },
                 username: faker.internet.userName(),
-
+                password: bcrypt.hashSync(faker.internet.password(), 10),
                 email: faker.internet.email(),
+                active: faker.datatype.boolean(),
                 address: {
                     street: faker.address.streetAddress(),
                     nbr: faker.address.buildingNumber(),
@@ -46,7 +54,6 @@ const validators = require('./validators');
                     city: faker.address.city(),
                     country: faker.address.country(),
                 },
-                password: 'bcrypt.hashSync(faker.internet.password(), 10)',
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };

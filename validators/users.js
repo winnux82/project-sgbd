@@ -4,7 +4,8 @@ module.exports = {
     validator: {
         $jsonSchema: {
             bsonType: 'object',
-            // required: ['username,password,email'],
+            required: ['username', 'password', 'email', 'active'],
+
             properties: {
                 name: {
                     bsonType: 'object',
@@ -23,7 +24,7 @@ module.exports = {
                     bsonType: 'string',
                     description: ' must be a string and is required',
                 },
-                mail: {
+                email: {
                     bsonType: 'string',
                     description: ' must be a string and is required',
                 },
