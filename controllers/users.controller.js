@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const Joi = require('joi');
 const { ObjectId } = require('mongodb');
 
+const client = require('../utils/db-client.util');
+
 exports.findAll = async (req, res) => {
     const data = await collection.find({}).toArray();
     console.log(data);
@@ -31,17 +33,28 @@ exports.create = async (req, res) => {
         username: Joi.string().required(),
         email: Joi.string().email().required(),
         password: Joi.string().min(8).required(),
+        active: Joi.bool().required(),
     });
 
     const { body } = req;
 
     const { value, error } = schema.validate(body);
 
-    // if (error) {
-    //     return res.status(400).json({ message: error });
-    // }
+    if (error) {
+        return res.status(400).json({ message: error });
+    }
 
-    const { password, ...rest } = value;
+    const { username, email, password, ...rest } = value;
+    // Check for existing username or email
+    const existingUser = await collection.findOne({
+        $or: [{ username }, { email }],
+    });
+    if (existingUser) {
+        return res
+            .status(409)
+            .json({ message: 'Username or email already exists' });
+    }
+
     //on efface le
     delete password;
     const hash = await bcrypt.hash(password, 10);
@@ -49,6 +62,8 @@ exports.create = async (req, res) => {
     const data = await collection
         .insertOne({
             password: hash,
+            username,
+            email,
             ...rest,
         })
         .catch((err) => {

@@ -16,8 +16,12 @@
         "http-errors": "~1.6.3",
         "ioredis": "^5.3.0",
         "joi": "^17.7.0",
+        "jsonwebtoken": "^9.0.0",
         "mongodb": "^4.13.0",
         "morgan": "~1.9.1",
+        "passport": "^0.6.0",
+        "passport-jwt": "^4.0.1",
+        "passport-local": "^1.0.0",
         "pug": "2.0.0-beta11"
     },
     "devDependencies": {
