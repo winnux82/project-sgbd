@@ -4,8 +4,9 @@ const collection = database.collection('users');
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
 const { ObjectId } = require('mongodb');
+const { myPassportLocal } = require('../passport');
 
-const client = require('../utils/db-client.util');
+// const client = require('../utils/db-client.util');
 
 exports.findAll = async (req, res) => {
     const data = await collection.find({}).toArray();

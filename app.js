@@ -3,13 +3,19 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var passport = require('passport');
 
-var indexRouter = require('./routes/index')(passport);
+var indexRouter = require('./routes/index');
 var appointmentsRouter = require('./routes/appointments');
 var usersRouter = require('./routes/users');
-var auth = require('./routes/auth');
+var authRouter = require('./routes/auth');
+
+const { myPassportLocal } = require('./passport');
+
 var app = express();
+
+app.post('login', async (req, res) => {
+    res.json({ ok: 'ok' });
+});
 
 // app.use('/auth', auth);
 // view engine setup
@@ -22,17 +28,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', passport.authenticate('jwt', { session: false }), indexRouter);
-app.use(
-    '/users',
-    passport.authenticate('jwt', { session: false }),
-    usersRouter
-);
-app.use(
-    '/appointments',
-    passport.authenticate('jwt', { session: false }),
-    appointmentsRouter
-);
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+app.use('/appointments', appointmentsRouter);
+app.use('/login', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
