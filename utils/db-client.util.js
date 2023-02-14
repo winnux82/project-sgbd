@@ -1,7 +1,7 @@
 // db-client.util.js
 const { MongoClient } = require('mongodb');
 
-const { myPassportLocal } = require('../passport');
+// const { myPassportLocal } = require('../passport');
 //mongodb://user:pwd@host:port
 const url = `mongodb://${process.env.MONGO_DB_USERNAME}:${process.env.MONGO_DB_PWD}@${process.env.MONGO_DB_HOST}:${process.env.MONGO_DB_PORT}`;
 // const url = `mongodb://${process.env.MONGO_DB_HOST}:${process.env.MONGO_DB_PORT}`;
@@ -11,9 +11,6 @@ const client = new MongoClient(url);
 (async () => {
     try {
         const db = await client.connect();
-
-        //passport
-        myPassportLocal(db);
 
         console.log(
             `\u001b[1;34mConnected to MongoDB on  : \u001b[1;31m${url} \u001b[0m `
